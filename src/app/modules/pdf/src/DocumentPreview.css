@@ -1,0 +1,71 @@
+.document-preview-modal .modal-dialog {
+    position: fixed;
+    width: 100%;
+    margin: 0 auto;
+}
+.document-preview-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: none;
+    border-radius: 0;
+    border: 0;
+}
+.document-preview-modal .modal-header {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.document-preview-modal .modal-header .modal-title {
+    font-size: 2.5em;
+}
+.document-preview-modal .modal-header::before,
+.document-preview-modal .modal-header .toolbar {
+    flex: 1;
+    display: block;
+}
+.document-preview-modal .modal-header .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+.document-preview-modal .modal-header button.close {
+    box-sizing: content-box;
+    background: #1ca4bf;
+    color: white;
+    opacity: 1;
+    border-radius: 100%;
+    width: 1.2em;
+    height: 1.2em;
+    line-height: 1.2em;
+    border: 2px solid white;
+    font-weight: normal;
+    vertical-align: middle;
+    font-size: 24px;
+    padding: 0.25em;
+}
+/* .document-preview-modal .modal-header button.close span {
+    height: 1.25em;
+    display: block;
+} */
+.document-preview-modal .modal-header,
+.document-preview-modal .modal-footer {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 0;
+}
+.document-preview-modal .modal-body {
+    flex: 1;
+    position: relative;
+    padding: 0;
+    text-align: center;
+    overflow: hidden;
+}
+
+.document-preview-modal button:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px #b2f2ff;
+}

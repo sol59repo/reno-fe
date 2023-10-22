@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (ID, password) => {
         await new Promise((resolve) => setTimeout(resolve, 1000))
         const body = JSON.stringify({ ID, password });
-        const response = await api.auth('login/', body);
+        const response = await api.auth('login', body);
         let data = await response.json();
 
         if (response.status !== 200) {

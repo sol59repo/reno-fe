@@ -177,7 +177,7 @@ const ViewEvent = ({ event = {}, open, handleViewEventClose, attendees, managers
                                 secondary={schedule != undefined ? format(new Date(schedule), "MMM d, yyyy 'at' h:m a") : ""}
                             />
                         </ListItem>
-                        
+
                         <ListItem>
                             <ListItemIcon>
                                 <EventNote />

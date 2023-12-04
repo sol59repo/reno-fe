@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        ; (async () => {
+        (async () => {
             try {
                 const accessToken = window.localStorage.getItem('accessToken')
                 if (accessToken && isValidToken(accessToken)) {

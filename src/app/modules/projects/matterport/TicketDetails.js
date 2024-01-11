@@ -90,7 +90,9 @@ const TicketDetails = ({ setHasChanged }) => {
         const response = await _logic.getTickets(srcEmbed);
         let ticketData = [];
         if (response.length !== 0) {
-            ticketData = JSON.parse(response[0].measurements);
+            let jsonString = response[0].measurements;
+            jsonString = jsonString.replace(/\\"/g, '"');
+            ticketData = JSON.parse(jsonString);
         }
 
         mpSdk.Mattertag.getData()

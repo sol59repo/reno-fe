@@ -86,7 +86,9 @@ const MeasurementDetails = ({ setHasChanged }) => {
         const response = await _logic.getMeasurements(srcEmbed);
         let measurementData = [];
         if (response.length !== 0) {
-            measurementData = JSON.parse(response[0].measurements);
+            let jsonString = response[0].measurements;
+            jsonString = jsonString.replace(/\\"/g, '"');
+            measurementData = JSON.parse(jsonString);
         }
         mpSdk.Mattertag.getData()
             .then((tags) => {

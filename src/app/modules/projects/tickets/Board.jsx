@@ -121,7 +121,9 @@ const Board = ({ LocationName }) => {
         const generatedId = shortId.generate();
         let sequence = [];
         if (cardSequence.length > 0) {
-            sequence = JSON.parse(cardSequence[0].sequence);
+            let jsonString = cardSequence[0].sequence;
+            jsonString = jsonString.replace(/\\"/g, '"');
+            sequence = JSON.parse(jsonString);
         }
         sequence.push(generatedId);
         const _data = {

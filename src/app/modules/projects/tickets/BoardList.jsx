@@ -129,7 +129,9 @@ const BoardList = ({
             return []
         }
 
-        const filter = JSON.parse(column.cardSequence[0].sequence)?.map((val) => {
+        let jsonString = column.cardSequence[0].sequence;
+        jsonString = jsonString.replace(/\\"/g, '"');
+        const filter = JSON.parse(jsonString)?.map((val) => {
             return cardLists.filter(val2 => val2.id == val)[0];
         });
 

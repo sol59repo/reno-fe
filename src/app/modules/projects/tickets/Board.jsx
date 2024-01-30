@@ -119,9 +119,11 @@ const Board = ({ LocationName }) => {
 
     const handleAddNewCard = async (cardTitleText, listCount, cardSequence) => {
         const generatedId = shortId.generate();
-        const sequence = JSON.parse(cardSequence[0].sequence);
+        let sequence = [];
+        if (cardSequence.length > 0) {
+            sequence = JSON.parse(cardSequence[0].sequence);
+        }
         sequence.push(generatedId);
-
         const _data = {
             id: generatedId,
             fkCardList: listCount,
@@ -130,9 +132,7 @@ const Board = ({ LocationName }) => {
             cardSequence: JSON.stringify(sequence),
             modelId: id,
         };
-
         const response = await _logic.addCard(_data);
-
         if (response.status) {
             getCardLists();
             getSequence();

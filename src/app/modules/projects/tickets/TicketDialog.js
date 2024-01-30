@@ -14,14 +14,9 @@ import ProjectLogic from '../logic/ProjectLogic'
 import CommonLogic from 'app/logic/CommonLogic'
 import Board from './Board'
 
-
-
-
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />
 })
-
-
 
 const TicketDialog = (props) => {
     const theme = useTheme()

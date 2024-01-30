@@ -7,115 +7,128 @@ import {
     InputAdornment,
     ClickAwayListener,
     Button,
-} from '@mui/material'
-import ScrumBoardCard from './ScrumBoardCard'
-import Scrollbar from 'react-perfect-scrollbar'
-import { MatxMenu } from 'app/components'
-import { useDispatch, useSelector } from 'react-redux'
-import React, { useState, useEffect } from 'react'
-import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { Box, styled } from '@mui/system'
-import { H4 } from 'app/components/Typography'
-import { AlertConfirm } from 'app/commons'
-import ProjectLogic from '../logic/ProjectLogic'
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Add from '@mui/icons-material/Add';
+} from "@mui/material";
+import ScrumBoardCard from "./ScrumBoardCard";
+import Scrollbar from "react-perfect-scrollbar";
+import { MatxMenu } from "app/components";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { Droppable, Draggable } from "react-beautiful-dnd";
+import { Box, styled } from "@mui/system";
+import { H4 } from "app/components/Typography";
+import { AlertConfirm } from "app/commons";
+import ProjectLogic from "../logic/ProjectLogic";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Add from "@mui/icons-material/Add";
 
 const FlexBox = styled(Box)(() => ({
-    display: 'flex',
-    alignItems: 'center',
-}))
+    display: "flex",
+    alignItems: "center",
+}));
 
 const JustifyBox = styled(FlexBox)(() => ({
-    justifyContent: 'space-between',
-}))
+    justifyContent: "space-between",
+}));
 
 const StyledItem = styled(MenuItem)(() => ({
     minWidth: 148,
-    display: 'flex',
-    alignItems: 'center',
-    '& span': { paddingLeft: '2px' },
-}))
+    display: "flex",
+    alignItems: "center",
+    "& span": { paddingLeft: "2px" },
+}));
 
 const StyledScrollBar = styled(Scrollbar)(() => ({
-    height: 'auto',
-    position: 'relative',
-    paddingLeft: '16px',
-    paddingRight: '16px',
-}))
+    height: "auto",
+    position: "relative",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+}));
 
 const StyledCard = styled(Card)(() => ({
-    padding: '16px',
-    width: '100%',
+    padding: "16px",
+    width: "100%",
     borderRadius: 0,
-    cursor: 'pointer',
-}))
+    cursor: "pointer",
+}));
 
-const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, geticketCardMembers, handleListArchived, handleCardArchived }) => {
-    const [shouldOpenTitleEditor, setShouldOpenTitleEditor] = useState(false)
-    const [shouldOpenAddCard, setShouldOpenAddCard] = useState(false)
-    const [cardTitleText, setCardTitleText] = useState('')
-    const [columnTitleText, setColumnTitleText] = useState('')
+const BoardList = ({
+    data,
+    handleCardClick,
+    handleAddNewCard,
+    renameList,
+    geticketCardMembers,
+    handleListArchived,
+    handleCardArchived,
+}) => {
+    const [shouldOpenTitleEditor, setShouldOpenTitleEditor] = useState(false);
+    const [shouldOpenAddCard, setShouldOpenAddCard] = useState(false);
+    const [cardTitleText, setCardTitleText] = useState("");
+    const [columnTitleText, setColumnTitleText] = useState("");
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const _logic = ProjectLogic();
 
     const handleChange = (event) => {
-        let targetName = event.target.name
-        let value = event.target.value
+        let targetName = event.target.name;
+        let value = event.target.value;
 
-        if (targetName === 'cardTitleText') {
-            if (event.key === 'Enter' && !event.shiftKey) AddNewCardFromEnter(cardTitleText)
-            else setCardTitleText(value)
+        if (targetName === "cardTitleText") {
+            if (event.key === "Enter" && !event.shiftKey)
+                AddNewCardFromEnter(cardTitleText);
+            else setCardTitleText(value);
         } else {
-            if (event.key === 'Enter' && !event.shiftKey) handleRenameList()
-            else setColumnTitleText(value)
+            if (event.key === "Enter" && !event.shiftKey) handleRenameList();
+            else setColumnTitleText(value);
         }
-    }
+    };
 
     const handleRenameList = () => {
-        openTitleEditor(false)
-        renameList(columnTitleText, column.count)
-    }
+        openTitleEditor(false);
+        renameList(columnTitleText, column.count);
+    };
 
     const openTitleEditor = (value) => {
-        setShouldOpenTitleEditor(value)
-    }
+        setShouldOpenTitleEditor(value);
+    };
 
     const openAddCard = (value) => {
-        setShouldOpenAddCard(value)
-    }
+        setShouldOpenAddCard(value);
+    };
 
     const AddNewCardFromEnter = (cardTitleText) => {
-        setCardTitleText('')
-        handleAddNewCard(cardTitleText, column.count, column.cardSequence)
-        setShouldOpenAddCard(false)
-    }
+        setCardTitleText("");
+        handleAddNewCard(cardTitleText, column.count, column.cardSequence);
+        setShouldOpenAddCard(false);
+    };
 
     const AddNewCard = () => {
-        if (cardTitleText.trim() !== '') {
-            setCardTitleText('')
-            handleAddNewCard(cardTitleText, column.count, column.cardSequence)
-            setShouldOpenAddCard(false)
+        if (cardTitleText.trim() !== "") {
+            setCardTitleText("");
+            handleAddNewCard(cardTitleText, column.count, column.cardSequence);
+            setShouldOpenAddCard(false);
         }
-    }
-
+    };
 
     useEffect(() => {
-        let listTitle = data?.column?.name
-        if (listTitle) setColumnTitleText(listTitle)
-    }, [data])
+        let listTitle = data?.column?.name;
+        if (listTitle) setColumnTitleText(listTitle);
+    }, [data]);
 
-    let { provided, snapshot, column } = data
+    let { provided, snapshot, column } = data;
 
+    console.log(" :::::::  data", data);
 
-    let { cardLists = [] } = column
+    let { cardLists = [] } = column;
 
-    const bgLightGrey = 'rgba(0, 0, 0, 0.01)'
+    const bgLightGrey = "rgba(0, 0, 0, 0.01)";
 
     const newSequence = () => {
+        if (cardLists.length === 0 && column.cardSequence.length === 0) {
+            return []
+        }
+
         const filter = JSON.parse(column.cardSequence[0].sequence)?.map((val) => {
             return cardLists.filter(val2 => val2.id == val)[0];
         });
@@ -127,7 +140,7 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
         } else {
             return filter;
         }
-    }
+    };
 
     return (
         <Card
@@ -139,19 +152,14 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                 ...provided.draggableProps.style,
             }}
             sx={{
-                mx:
-                    '12px',
+                mx: "12px",
                 pt: 1,
                 width: 288,
-                position: 'relative',
-                height:'100%'
+                position: "relative",
+                height: "100%",
             }}
         >
-            <Droppable
-                droppableId={column.id}
-                direction="vertical"
-                type="card">
-
+            <Droppable droppableId={column.id} direction="vertical" type="card">
                 {(provided, snapshot) => (
                     <Box
                         ref={provided.innerRef}
@@ -193,10 +201,10 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                                 <H4
                                     onClick={() => openTitleEditor(true)}
                                     sx={{
-                                        py: '4px',
+                                        py: "4px",
                                         pl: 2,
                                         flexGrow: 1,
-                                        textTransform: 'capitalize',
+                                        textTransform: "capitalize",
                                     }}
                                 >
                                     {column.name}
@@ -210,7 +218,11 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                                     </IconButton>
                                 }
                             >
-                                <StyledItem onClick={() => handleListArchived(column.count)}>
+                                <StyledItem
+                                    onClick={() =>
+                                        handleListArchived(column.count)
+                                    }
+                                >
                                     <Icon> archived </Icon>
                                     <span> Archived </span>
                                 </StyledItem>
@@ -230,7 +242,7 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                                         <Card
                                             sx={{
                                                 mb: 2,
-                                                borderRadius: '4px',
+                                                borderRadius: "4px",
                                                 background: bgLightGrey,
                                             }}
                                             elevation={
@@ -252,7 +264,9 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                                         >
                                             <ScrumBoardCard
                                                 card={card}
-                                                geticketCardMembers={geticketCardMembers}
+                                                geticketCardMembers={
+                                                    geticketCardMembers
+                                                }
                                             ></ScrumBoardCard>
                                         </Card>
                                     )}
@@ -270,7 +284,7 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                     <StyledCard elevation={5}>
                         <TextField
                             size="small"
-                            sx={{ mb: '12px' }}
+                            sx={{ mb: "12px" }}
                             variant="outlined"
                             name="cardTitleText"
                             value={cardTitleText}
@@ -307,23 +321,26 @@ const BoardList = ({ data, handleCardClick, handleAddNewCard, renameList, getick
                         sx={{
                             minHeight: 30,
                             maxHeight: 30,
-                            color: '#42526e',
+                            color: "#42526e",
                             background: "rgba(0, 0, 0, 0.01)",
                         }}
                         onClick={() => openAddCard(true)}
                     >
-                        <ListItemIcon sx={{ color: 'inherit' }}>
+                        <ListItemIcon sx={{ color: "inherit" }}>
                             <Add />
                         </ListItemIcon>
                         <ListItemText
-                            primary={'Add Card'}
-                            primaryTypographyProps={{ fontSize: 14, fontWeight: 'medium' }}
+                            primary={"Add Card"}
+                            primaryTypographyProps={{
+                                fontSize: 14,
+                                fontWeight: "medium",
+                            }}
                         />
                     </ListItemButton>
                 </Box>
             )}
         </Card>
-    )
-}
+    );
+};
 
-export default BoardList
+export default BoardList;

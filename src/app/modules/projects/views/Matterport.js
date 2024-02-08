@@ -5,25 +5,27 @@ import {
 } from 'app/components'
 import { Tab, Tabs } from '@mui/material'
 import ProjectLogic from '../logic/ProjectLogic';
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import TicketDetails from '../matterport/TicketDetails';
 import MeasurementDetails from '../matterport/MeasurementDetails';
 import { AlertConfirm } from 'app/commons';
 
-
 const Matterport = props => {
-    const _logic = ProjectLogic();
     const { id } = useParams();
-
+    const _logic = ProjectLogic();
     const [hasChanged, setHasChanged] = useState(false)
     const [tabIndex, setTabIndex] = useState(0)
     const [projectInfo, setProjectInfo] = useState([{ location: "", fkModel: "" }])
     const { location, fkModel } = projectInfo[0]
 
-    useEffect(async () => {
-        const response = await _logic.getProjectSpace(id);
-        setProjectInfo(response);
-    }, [])
+    useEffect(() => {
+        const getProjectSpace = async () => {
+            const response = await _logic.getProjectSpace(id);
+            setProjectInfo(response);
+        }
+        getProjectSpace();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id])
 
 
     const handleChange = (value) => {
@@ -37,13 +39,11 @@ const Matterport = props => {
         });
     }
 
-
     const handleTabChange = (e, value) => {
         if (hasChanged) {
             handleChange(value)
             return;
         }
-
         setTabIndex(value)
     }
 
@@ -63,7 +63,6 @@ const Matterport = props => {
         return _tabs
     }
 
-
     return (
         <Container>
             <div className="breadcrumb">
@@ -75,7 +74,6 @@ const Matterport = props => {
                     ]}
                 />
             </div>
-
             <Tabs
                 sx={{ mt: 2 }}
                 value={tabIndex}
@@ -85,18 +83,8 @@ const Matterport = props => {
             >
                 {renderTabs()}
             </Tabs>
-
-            {tabIndex === 0 && (
-                <>
-                    <TicketDetails setHasChanged={setHasChanged} />
-                </>
-            )}
-
-            {tabIndex === 1 && (
-                <>
-                    <MeasurementDetails setHasChanged={setHasChanged} />
-                </>
-            )}
+            {tabIndex === 0 && (<TicketDetails setHasChanged={setHasChanged} />)}
+            {tabIndex === 1 && (<MeasurementDetails setHasChanged={setHasChanged} />)}
         </Container >
     );
 };

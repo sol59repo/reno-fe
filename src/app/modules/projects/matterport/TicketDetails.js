@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Grid, CircularProgress, Box } from '@mui/material'
 import ProjectLogic from '../logic/ProjectLogic';
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { setOverlayState } from 'app/redux/actions/commonActions'
 import Ticket from 'app/modules/projects/matterport/modelInfo/tickets/Ticket';
@@ -64,20 +64,64 @@ const TicketDetails = ({ setHasChanged }) => {
         return () => window.removeEventListener("beforeunload", unloadCallback);
     }, [hasChanges]);
 
-    useEffect(async () => {
-        const response = await _logic.getProjectSpace(id);
-        setProjectInfo(response);
-        setLocationName(response[0].location);
-    }, [])
-
+    useEffect(() => {
+        const getProjectSpace = async () => {
+            const response = await _logic.getProjectSpace(id);
+            setProjectInfo(response);
+            setLocationName(response[0].location);
+        }
+        getProjectSpace();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id])
 
     useEffect(() => {
+        const toggleGetTickets = async () => {
+            const response = await _logic.getTickets(srcEmbed);
+            let ticketData = [];
+            if (response.length !== 0) {
+                let jsonString = response[0].measurements;
+                jsonString = jsonString.replace(/\\"/g, '"');
+                ticketData = JSON.parse(jsonString);
+            }
+
+            mpSdk.Mattertag.getData()
+                .then((tags) => {
+                    let toRemove = [];
+                    if (tags.length > 0) {
+                        tags.forEach(element => {
+                            toRemove.push(element.sid);
+                        });
+                    }
+
+                    mpSdk.Mattertag.remove(toRemove);
+
+                    mpSdk.Mattertag.add(ticketData)
+                        .then((sid) => {
+                            return mpSdk.Mattertag.getData();
+                        })
+                        .then((collection) => {
+                            const mergeData = ticketData.map((val, idx) => {
+                                return {
+                                    ...val,
+                                    sid: collection[idx].sid
+                                }
+                            });
+                            setTickets(mergeData);
+                        })
+                        .then(() => { })
+                        .catch((e) => { })
+
+                })
+                .catch(console.error);
+        }
+
         setTimeout(() => {
             if (mpSdk !== null) {
                 setIsloadingSdk(false)
                 toggleGetTickets();
             }
         }, [2000])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mpSdk])
 
 
@@ -86,45 +130,6 @@ const TicketDetails = ({ setHasChanged }) => {
         setHasChanged(bool)
     }
 
-    const toggleGetTickets = async () => {
-        const response = await _logic.getTickets(srcEmbed);
-        let ticketData = [];
-        if (response.length !== 0) {
-            let jsonString = response[0].measurements;
-            jsonString = jsonString.replace(/\\"/g, '"');
-            ticketData = JSON.parse(jsonString);
-        }
-
-        mpSdk.Mattertag.getData()
-            .then((tags) => {
-                let toRemove = [];
-                if (tags.length > 0) {
-                    tags.forEach(element => {
-                        toRemove.push(element.sid);
-                    });
-                }
-
-                mpSdk.Mattertag.remove(toRemove);
-
-                mpSdk.Mattertag.add(ticketData)
-                    .then((sid) => {
-                        return mpSdk.Mattertag.getData();
-                    })
-                    .then((collection) => {
-                        const mergeData = ticketData.map((val, idx) => {
-                            return {
-                                ...val,
-                                sid: collection[idx].sid
-                            }
-                        });
-                        setTickets(mergeData);
-                    })
-                    .then(() => { })
-                    .catch((e) => { })
-
-            })
-            .catch(console.error);
-    }
 
 
     const saveChanges = async () => {
@@ -144,6 +149,7 @@ const TicketDetails = ({ setHasChanged }) => {
 
 
     const addNewTag = (tag, _refTag, mpSdk) => {
+        console.log("addNewTag addNewTag addNewTag addNewTag")
         const init = { ...tag[0], ..._refTag }
         setTickets(state => [...state, init])
         setOpen(true);
@@ -160,13 +166,13 @@ const TicketDetails = ({ setHasChanged }) => {
         setStatus(status);
 
         let filterTags = tickets.filter((val, idx) => {
-            if (val.status == status) {
+            if (val.status.toString() === status.toString()) {
                 return true;
             }
             return false;
         })
 
-        if (status == "All") {
+        if (status === "All") {
             filterTags = tickets
         }
 
@@ -200,11 +206,11 @@ const TicketDetails = ({ setHasChanged }) => {
                         .then(() => { })
                         .catch((e) => { })
                 }
-
             })
             .catch(console.error);
     }
 
+    console.log("open==>>>>", open);
 
     return (
         <>
@@ -221,7 +227,6 @@ const TicketDetails = ({ setHasChanged }) => {
                             }}>
                                 <CircularProgress className="progress" color="info" />
                             </Box>
-
                             :
                             <Ticket
                                 childCompRef={childCompRef}
@@ -240,8 +245,6 @@ const TicketDetails = ({ setHasChanged }) => {
                                 _setchanges={_setchanges}
                             />
                         }
-
-
                     </Grid>
                     <Grid item lg={8} md={8} sm={12} xs={12} sx={{ mt: 2 }}>
                         <Frame
@@ -259,7 +262,6 @@ const TicketDetails = ({ setHasChanged }) => {
                     </Grid>
                 </Grid>
             </div>
-
             {open && <AddTicketWindow
                 handleClose={handleClose}
                 data={openData}

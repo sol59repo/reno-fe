@@ -42,28 +42,27 @@ const Frame = forwardRef((props, ref) => {
     const iframeRef = useRef(null);
 
     useEffect(() => {
+        const _getsdk = async () => {
+            let mpSdk = await GetSDK(iframeRef.current, _applicationKey);
+            setTimeout(() => {
+                setMpSdk(mpSdk);
+                _setMpSdk(mpSdk);
+                _onSdkConnect(mpSdk);
+            }, 600);
+        }
         _getsdk();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [iframeRef]);
 
     // console.log('navigator.platform)', navigator);
 
-    const _getsdk = async () => {
-        let mpSdk = await GetSDK(iframeRef.current, _applicationKey);
-        setTimeout(() => {
-            setMpSdk(mpSdk);
-            _setMpSdk(mpSdk);
-            _onSdkConnect(mpSdk);
-        }, 600);
-    }
+
 
     const _onSdkConnect = async (mpSdk) => {
-
         console.log('isFirefox', isFirefox);
-
         if (!isFirefox) {
             _focusDetect(mpSdk);
         }
-
         table_container = document.querySelector(".scrollable");
         iframe = document.querySelector('.ticket-showcase-iframe');
 
@@ -138,6 +137,8 @@ const Frame = forwardRef((props, ref) => {
             }
         } else {
             const eventListener = window.addEventListener('blur', function () {
+                console.log("document.activeElement", document.activeElement);
+                console.log("document.activeElement iframe", iframe);
                 if (document.activeElement === iframe) {
                     console.log('11');
                     _placeTag(mpSdk); //function you want to call on click
@@ -175,18 +176,18 @@ const Frame = forwardRef((props, ref) => {
                 overlay.remove();
             });
             // table_container.insertAdjacentElement('beforeend', overlay);
-
         }
     }
 
-
     const _placeTag = (mpSdk) => {
+        console.log("_placeTag  _placeTag", mpSdk);
+        console.log("_placeTag  _placeTag tag", tag);
         if (tag) mpSdk.Mattertag.navigateToTag(tag, mpSdk.Mattertag.Transition.FLY);
         if (tag !== null && tag !== undefined) {
             const refTag = tag;
             mpSdk.Mattertag.getData()
                 .then((collection) => {
-                    const t_sid = collection.filter(elem => elem.sid == refTag);
+                    const t_sid = collection.filter(elem => elem.sid.toString() === refTag.toString());
                     const refWithId = {
                         refId: new Date().getTime(),
                         status: "Pending"
@@ -205,6 +206,7 @@ const Frame = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         _addNewTag(mpSdk) {
+            console.log("useImperativeHandle  _addNewTag")
             if (mpSdk) {
                 if (!addingTag && !tag) {
                     addingTag = true;
@@ -237,24 +239,23 @@ const Frame = forwardRef((props, ref) => {
     }))
 
     return (
-        <>
-            <iframe
-                crossOrigin="true"
-                ref={iframeRef}
-                id='ticket-showcase-iframe'
-                className='ticket-showcase-iframe'
-                src={`https://my.matterport.com/show?m=${srcEmbed}&play=1&applicationKey=${_applicationKey}`}
-                allow='xr-spatial-tracking; fullscreen'
-                style={{
-                    boxShadow: `0 4px 8px rgb(43 43 43)`,
-                    width: "100%",
-                    height: "100%",
-                    minHeight: window.innerHeight - (window.innerHeight * .30),
-                    maxHeight: window.innerHeight - (window.innerHeight * .30)
+        <iframe
+            title='iframe'
+            crossOrigin="true"
+            ref={iframeRef}
+            id='ticket-showcase-iframe'
+            className='ticket-showcase-iframe'
+            src={`https://my.matterport.com/show?m=${srcEmbed}&play=1&applicationKey=${_applicationKey}`}
+            allow='xr-spatial-tracking; fullscreen'
+            style={{
+                boxShadow: `0 4px 8px rgb(43 43 43)`,
+                width: "100%",
+                height: "100%",
+                minHeight: window.innerHeight - (window.innerHeight * .30),
+                maxHeight: window.innerHeight - (window.innerHeight * .30)
 
-                }}
-            />
-        </>
+            }}
+        />
     )
 })
 

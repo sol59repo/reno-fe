@@ -148,15 +148,22 @@ const Board = ({ LocationName }) => {
         destination
     ) => {
         const sourceItems = cardList.find((list) => list.id === sourcelistId);
-        let spliced = JSON.parse(sourceItems.cardSequence[0].sequence);
+        console.log(sourceItems.cardSequence[0].sequence)
+        let jsonString = sourceItems.cardSequence[0].sequence;
+        jsonString = jsonString.replace(/\\"/g, '"');
+        let spliced = JSON.parse(jsonString);
+
         let [moveItem] = spliced.splice(source.index, 1);
 
         const destinationItems = cardList.find(
             (list) => list.id === destinationlistId
         );
-        let parsedDestination = JSON.parse(
-            destinationItems.cardSequence[0].sequence
-        );
+
+        let jsonString2 = sourceItems.cardSequence[0].sequence;
+        jsonString2 = jsonString2.replace(/\\"/g, '"');
+
+        let parsedDestination = JSON.parse(jsonString2);
+
         let addedItem = parsedDestination.splice(
             destination.index,
             0,

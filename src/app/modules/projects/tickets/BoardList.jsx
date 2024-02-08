@@ -118,7 +118,7 @@ const BoardList = ({
 
     let { provided, snapshot, column } = data;
 
-    console.log(" :::::::  data", data);
+    // console.log(" :::::::  data", data);
 
     let { cardLists = [] } = column;
 

@@ -12,7 +12,7 @@ export function GetSDK(iframe, applicationKey) {
                 const sdk = await window.MP_SDK.connect(
                     iframe, // Obtained earlier
                     applicationKey, // Your SDK key
-                    '3.5' // Unused but needs to be a valid string
+                    '' // Unused but needs to be a valid string
                 );
                 resolve(sdk);
             } catch (e) {

@@ -118,25 +118,33 @@ const BoardList = ({
 
     let { provided, snapshot, column } = data;
 
-    // console.log(" :::::::  data", data);
-
     let { cardLists = [] } = column;
+
+    // console.log("column", column);
+    // console.log("cardLists", cardLists);
 
     const bgLightGrey = "rgba(0, 0, 0, 0.01)";
 
-    const newSequence = () => {
-        if (cardLists.length === 0 && column.cardSequence.length === 0) {
-            return []
+    const newSequence = (_cardLists, _column) => {
+        if (_cardLists.length === 0 && _column.cardSequence.length === 0) {
+            return [];
         }
 
-        let jsonString = column.cardSequence[0].sequence;
+        let jsonString = _column.cardSequence[0].sequence;
         jsonString = jsonString.replace(/\\"/g, '"');
-        const filter = JSON.parse(jsonString)?.map((val) => {
-            return cardLists.filter(val2 => val2.id == val)[0];
+        jsonString = JSON.parse(jsonString);
+
+        console.log("jsonString", jsonString);
+        console.log("_cardLists", _cardLists);
+
+        const filter = jsonString?.map((val) => {
+            return _cardLists.filter(
+                (val2) => val2.id.toString() === val.toString()
+            )[0];
         });
 
         if (filter[0] === undefined) {
-            return []
+            return [];
         } else if (filter[filter?.length - 1] === undefined) {
             return filter.slice(0, -1);
         } else {
@@ -232,8 +240,9 @@ const BoardList = ({
                         </JustifyBox>
 
                         <StyledScrollBar>
-                            {/* {cardLists?.map((card, index) => ( */}
-                            {newSequence()?.map((card, index) => (
+                            {/* {newSequence(cardLists, column)?.map(
+                                (card, index) => ( */}
+                            {cardLists?.map((card, index) => (
                                 <Draggable
                                     key={card.id}
                                     draggableId={card.id}

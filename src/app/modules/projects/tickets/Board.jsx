@@ -60,8 +60,23 @@ const Board = ({ LocationName }) => {
     const title = LocationName;
 
     useEffect(() => {
-        getCardLists();
-        getSequence();
+        const _getCardLists = async () => {
+            const response = await _logic.getCardLists(id);
+            setCardList(response);
+        };
+
+        const _getSequence = async () => {
+            const response = await _logic.getSequence(id);
+            if (response.length > 0) {
+                let jsonString = response[0].cardListSeq;
+                jsonString = jsonString.replace(/\\"/g, '"');
+                const data_ = JSON.parse(jsonString);
+                setCardListSequence(data_);
+            }
+        };
+
+        _getCardLists();
+        _getSequence();
     }, []);
 
     const handleAddList = async (newList) => {
@@ -148,7 +163,7 @@ const Board = ({ LocationName }) => {
         destination
     ) => {
         const sourceItems = cardList.find((list) => list.id === sourcelistId);
-        console.log(sourceItems.cardSequence[0].sequence)
+        console.log(sourceItems.cardSequence[0].sequence);
         let jsonString = sourceItems.cardSequence[0].sequence;
         jsonString = jsonString.replace(/\\"/g, '"');
         let spliced = JSON.parse(jsonString);
@@ -329,9 +344,6 @@ const Board = ({ LocationName }) => {
             getSequence();
         }
     };
-
-    console.log("cardList", cardList);
-    console.log("cardListSequence()", cardListSequence);
 
     return (
         <Container className="scrum-board">

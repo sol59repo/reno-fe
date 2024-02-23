@@ -120,28 +120,14 @@ const BoardList = ({
 
     let { cardLists = [] } = column;
 
-    // console.log("column", column);
-    // console.log("cardLists", cardLists);
-
     const bgLightGrey = "rgba(0, 0, 0, 0.01)";
 
-    const newSequence = (_cardLists, _column) => {
-        if (_cardLists.length === 0 && _column.cardSequence.length === 0) {
-            return [];
-        }
-
-        let jsonString = _column.cardSequence[0].sequence;
-        jsonString = jsonString.replace(/\\"/g, '"');
-        jsonString = JSON.parse(jsonString);
-
-        console.log("jsonString", jsonString);
-        console.log("_cardLists", _cardLists);
-
-        const filter = jsonString?.map((val) => {
-            return _cardLists.filter(
-                (val2) => val2.id.toString() === val.toString()
-            )[0];
-        });
+    const newSequence = () => {
+        const filter = JSON.parse(column.cardSequence[0].sequence)?.map(
+            (val) => {
+                return cardLists.filter((val2) => val2.id == val)[0];
+            }
+        );
 
         if (filter[0] === undefined) {
             return [];
@@ -240,9 +226,8 @@ const BoardList = ({
                         </JustifyBox>
 
                         <StyledScrollBar>
-                            {/* {newSequence(cardLists, column)?.map(
-                                (card, index) => ( */}
-                            {cardLists?.map((card, index) => (
+                            {/* {cardLists?.map((card, index) => ( */}
+                            {newSequence()?.map((card, index) => (
                                 <Draggable
                                     key={card.id}
                                     draggableId={card.id}

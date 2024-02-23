@@ -104,7 +104,7 @@ class CustomToolbarSelect extends React.Component {
 
     if (timeType === "") {
       AlertConfirm({
-        callback: () => {},
+        callback: () => { },
         title: "Please select time type and availability status",
         text: "Close this window to continue",
         icon: "error",
@@ -120,9 +120,14 @@ class CustomToolbarSelect extends React.Component {
     ).toUpperCase();
 
     console.log("data", data);
+    console.log("this.props.selectedRows", this.props.selectedRows);
     const selectedData = [];
     this.props.selectedRows.data?.map((row) => {
+
       const rowData = data[row.index];
+
+      console.log("rowData", rowData);
+
       const toSubmit = {
         count: rowData.count,
         status: timeType,

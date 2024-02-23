@@ -60,23 +60,8 @@ const Board = ({ LocationName }) => {
     const title = LocationName;
 
     useEffect(() => {
-        const _getCardLists = async () => {
-            const response = await _logic.getCardLists(id);
-            setCardList(response);
-        };
-
-        const _getSequence = async () => {
-            const response = await _logic.getSequence(id);
-            if (response.length > 0) {
-                let jsonString = response[0].cardListSeq;
-                jsonString = jsonString.replace(/\\"/g, '"');
-                const data_ = JSON.parse(jsonString);
-                setCardListSequence(data_);
-            }
-        };
-
-        _getCardLists();
-        _getSequence();
+        getCardLists();
+        getSequence();
     }, []);
 
     const handleAddList = async (newList) => {
@@ -125,22 +110,15 @@ const Board = ({ LocationName }) => {
     const getSequence = async () => {
         const response = await _logic.getSequence(id);
         if (response.length > 0) {
-            let jsonString = response[0].cardListSeq;
-            jsonString = jsonString.replace(/\\"/g, '"');
-            const data_ = JSON.parse(jsonString);
-            setCardListSequence(data_);
+            setCardListSequence(JSON.parse(response[0].cardListSeq));
         }
     };
 
     const handleAddNewCard = async (cardTitleText, listCount, cardSequence) => {
         const generatedId = shortId.generate();
-        let sequence = [];
-        if (cardSequence.length > 0) {
-            let jsonString = cardSequence[0].sequence;
-            jsonString = jsonString.replace(/\\"/g, '"');
-            sequence = JSON.parse(jsonString);
-        }
+        const sequence = JSON.parse(cardSequence[0].sequence);
         sequence.push(generatedId);
+
         const _data = {
             id: generatedId,
             fkCardList: listCount,
@@ -149,7 +127,9 @@ const Board = ({ LocationName }) => {
             cardSequence: JSON.stringify(sequence),
             modelId: id,
         };
+
         const response = await _logic.addCard(_data);
+
         if (response.status) {
             getCardLists();
             getSequence();
@@ -163,22 +143,15 @@ const Board = ({ LocationName }) => {
         destination
     ) => {
         const sourceItems = cardList.find((list) => list.id === sourcelistId);
-        console.log(sourceItems.cardSequence[0].sequence);
-        let jsonString = sourceItems.cardSequence[0].sequence;
-        jsonString = jsonString.replace(/\\"/g, '"');
-        let spliced = JSON.parse(jsonString);
-
+        let spliced = JSON.parse(sourceItems.cardSequence[0].sequence);
         let [moveItem] = spliced.splice(source.index, 1);
 
         const destinationItems = cardList.find(
             (list) => list.id === destinationlistId
         );
-
-        let jsonString2 = sourceItems.cardSequence[0].sequence;
-        jsonString2 = jsonString2.replace(/\\"/g, '"');
-
-        let parsedDestination = JSON.parse(jsonString2);
-
+        let parsedDestination = JSON.parse(
+            destinationItems.cardSequence[0].sequence
+        );
         let addedItem = parsedDestination.splice(
             destination.index,
             0,
@@ -344,6 +317,9 @@ const Board = ({ LocationName }) => {
             getSequence();
         }
     };
+
+    console.log("cardList", cardList);
+    console.log("cardListSequence()", cardListSequence);
 
     return (
         <Container className="scrum-board">

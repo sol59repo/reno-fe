@@ -137,10 +137,10 @@ const Frame = forwardRef((props, ref) => {
             }
         } else {
             const eventListener = window.addEventListener('blur', function () {
-                console.log("document.activeElement", document.activeElement);
-                console.log("document.activeElement iframe", iframe);
+                // console.log("document.activeElement", document.activeElement);
+                // console.log("document.activeElement iframe", iframe);
                 if (document.activeElement === iframe) {
-                    console.log('11');
+                    console.log('11:===>>>');
                     _placeTag(mpSdk); //function you want to call on click
                     setTimeout(function () { window.focus(); }, 0);
                 }
@@ -206,7 +206,8 @@ const Frame = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         _addNewTag(mpSdk) {
-            console.log("useImperativeHandle  _addNewTag")
+            console.log("useImperativeHandle  _addNewTag tag", tag)
+            console.log("useImperativeHandle  _addNewTag addingTag", addingTag)
             if (mpSdk) {
                 if (!addingTag && !tag) {
                     addingTag = true;

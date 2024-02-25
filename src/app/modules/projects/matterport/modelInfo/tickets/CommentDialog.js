@@ -131,7 +131,7 @@ const CommentDialog = ({
         setComments(Comments);
         setState({
             ...state,
-            labels: JSON.parse(ObjStatus[0].status),
+            labels: ObjStatus.length > 0 ? JSON.parse(ObjStatus[0].status) : [],
             cardMembers: commentsMembers,
             summary: title,
             description: desc

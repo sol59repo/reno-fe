@@ -2,9 +2,7 @@ export function GetSDK(iframe, applicationKey) {
     return new Promise ((resolve, reject)=>{
         // const iframe = document.getElementById('showcase-iframe');
 
-        console.log('iframe',iframe);
-        console.log('applicationKey',applicationKey);
-        
+    
         iframe.addEventListener('load', async function () {
             try {
 

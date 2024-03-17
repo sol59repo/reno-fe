@@ -1,30 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
     Dialog,
-    TextField,
     Icon,
-    Avatar,
     Button,
     Divider,
     IconButton,
-    FormControlLabel,
-    Checkbox,
-    Tooltip,
     Grid,
     Input,
     useMediaQuery,
 } from '@mui/material';
-import { getTimeDifference } from 'utils.js'
 
 import Scrollbar from 'react-perfect-scrollbar'
-import { MatxMenu } from 'app/components'
-import { useDispatch, useSelector } from 'react-redux'
 import { Box, styled, useTheme } from '@mui/system'
-import { H6, H3, Paragraph, Small, Span } from 'app/components/Typography'
 import CommonLogic from 'app/logic/CommonLogic';
 import { useSnackbar } from 'notistack'
 import ProjectLogic from 'app/modules/projects/logic/ProjectLogic';
-import { useParams } from 'react-router-dom';
 import CardMembers from './dialogComps/CardMembers';
 import Status from './dialogComps/Status';
 import Description from './dialogComps/Description';
@@ -34,6 +24,12 @@ import SideButtons from './dialogComps/SideButton';
 import Helpers from 'app/utils/Helpers';
 import { AlertConfirm } from 'app/commons';
 
+
+const colors = {
+    Pending: { r: 1, g: 0, b: 0 },
+    InProgress: { r: 0.9, g: 0.9, b: 0 },
+    Completed: { r: 0.0, g: 0.0, b: 1.0 }
+}
 
 
 const StyledInput = styled(Input)(() => ({
@@ -74,8 +70,9 @@ const ContentBox = styled(Box)(({ theme }) => ({
     },
 }))
 
-let label;
-
+function compareColors(color1, color2) {
+    return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
+}
 const CommentDialog = ({
     handleClose,
     data,
@@ -90,14 +87,21 @@ const CommentDialog = ({
     const _commonlogic = CommonLogic();
     const _logic = ProjectLogic();
     const { enqueueSnackbar } = useSnackbar()
-    const dispatch = useDispatch()
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const sid = data?.sid;
     const title = data?.label;
     const refId = data?.refId;
     const desc = data?.description;
-    const status = data?.status;
+    let status = data?.status;
+
+    for (const [key, value] of Object.entries(colors)) {
+        if (compareColors(data.color, value)) {
+            status = key;
+            break;
+        }
+    }
+
     const [attachments, setAttachments] = useState([]);
     const [state, setState] = useState({
         labels: [],
@@ -110,9 +114,12 @@ const CommentDialog = ({
 
     console.log('data', data);
 
-    useEffect(async () => {
-        const response = await _logic.initComments({ refId: refId });
-        console.log('response', response);
+    useEffect(() => {
+        const initComments = async () => {
+            const response = await _logic.initComments({ refId: refId });
+            console.log('response', response);
+        }
+        initComments();
     }, [])
 
     useEffect(() => {
@@ -147,13 +154,10 @@ const CommentDialog = ({
         switch (status) {
             case "1":
                 return "Pending"
-                break;
             case "2":
                 return "Completed"
-                break;
             case "3":
                 return "InProgress"
-                break;
             default:
                 return "Pending"
         }
@@ -161,20 +165,11 @@ const CommentDialog = ({
 
     const handleChange = (event) => {
         _setchanges(true) // prevent reload page
-
         if (event.target.name === 'label') {
             let id = event.target.value
-            let { labels } = state
-
             let label = listStatus.filter((item) => item.id === parseInt(id));
             setState({ ...state, labels: label })
             mpSdk.Mattertag.editColor(sid, _helpers.statusRGB(getColor(id)));
-            updateTagColorsOnChange(getColor(id), _helpers.statusRGB(getColor(id)))
-
-
-            console.log('+++++,', _helpers.statusRGB(getColor(id)));
-            // sendStatus(labels);
-
         } else if (event.target.name === 'avatar') {
             let id = event.target.value
             let { cardMembers } = state
@@ -195,23 +190,6 @@ const CommentDialog = ({
                 [event.target.name]: event.target.value
             })
         }
-    }
-
-    const updateTagColorsOnChange = (status, color) => {
-        console.log('status ------', status);
-        let filterTickets = tickets.map(val => {
-            if (val.refId == refId) {
-                return {
-                    ...val,
-                    status: status,
-                    color: color
-                }
-            } else {
-                return val;
-            }
-        });
-
-        setTickets(filterTickets);
     }
 
 
@@ -263,13 +241,12 @@ const CommentDialog = ({
 
 
     useEffect(() => {
+        const _getAsignedStaff = async () => {
+            const response = await _logic.getAsignedStaff(fkModel);
+            setStaffs(response);
+        }
         _getAsignedStaff()
     }, []);
-
-    const _getAsignedStaff = async () => {
-        const response = await _logic.getAsignedStaff(fkModel);
-        setStaffs(response);
-    }
 
 
     const handleCardArchived = () => {
@@ -284,9 +261,9 @@ const CommentDialog = ({
     }
 
     const _confirmArchived = () => {
-        let filterRefTags = tickets.filter(val => val.refId !== refId);
-        setTickets(filterRefTags);
-        mpSdk.Mattertag.remove(sid)
+        const block = document.getElementById(sid);
+        block.parentNode.removeChild(block);
+        mpSdk.Mattertag.remove(block.id)
             .catch((e) => { console.log(e); });
         enqueueSnackbar(`Ticket successfully removed!`, { variant: 'success' });
         closeDialog()
@@ -295,37 +272,19 @@ const CommentDialog = ({
 
 
     const handleSave = () => {
-        console.log('description', description);
-        console.log('summary', summary);
-        console.log('summary', summary);
-        console.log('refId', refId);
-        console.log('sid', sid);
-
-
         if (summary === "" || description === "" || summary === undefined || description === undefined) {
             enqueueSnackbar(`Please fill out empty fileds!`, { variant: 'error' });
             return;
         }
 
-        let filterRefTags = tickets.map(val => {
-            if (val.refId == refId) {
-                return {
-                    ...val,
-                    description: description,
-                    label: summary
-                }
-            } else {
-                return val;
-            }
-        });
-
         mpSdk.Mattertag.editBillboard(sid, {
             label: summary,
             description: description
         })
-            .catch((e) => { console.error(e); });
-
-        setTickets(filterRefTags);
+            .catch((e) => { console.error(e); return; });
+        const block = document.getElementById(sid);
+        block.children[0].innerText = summary;
+        block.children[1].innerText = description;
         enqueueSnackbar(`Updates saved in browser session.`, { variant: 'success' });
         _setchanges(true) // prevent reload page
     }

@@ -37,10 +37,6 @@ const Ticket = props => {
         hasChanges,
         _setchanges
     } = props
-
-
-
-
     return (
         <>
             <FlexBox >
@@ -55,9 +51,6 @@ const Ticket = props => {
                         <Icon size="small" >add</Icon>
                         Add Ticket
                     </Button>
-
-
-
                     <Button
                         style={{ margin: 5 }}
                         size='small'
@@ -67,7 +60,6 @@ const Ticket = props => {
                         onClick={saveChanges}>
                         <Icon size="small" >send</Icon>
                         Publish</Button>
-
                 </Box>
 
                 <Box sx={{ minWidth: 220 }}>

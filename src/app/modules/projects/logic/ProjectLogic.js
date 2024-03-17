@@ -557,18 +557,6 @@ const ProjectLogic = (props) => {
         return;
       }
     },
-    getTickets: async (modelId) => {
-      const response = await api.get(`model/getTickets/${modelId}`);
-      let data = await response.json();
-      if (response.status === 200) {
-        let _decodeData = await _helpers._return(data);
-        return _decodeData.apiRet;
-      } else {
-        enqueueSnackbar(`Error retrieving of staff!`, { variant: "error" });
-        return;
-      }
-    },
-
     getAttendance: async (postData) => {
       const body = JSON.stringify(postData);
       const response = await api.post("model/getAttendance", body);

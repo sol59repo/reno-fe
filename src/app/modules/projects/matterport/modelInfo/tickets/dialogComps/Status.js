@@ -25,7 +25,6 @@ const Heading = styled(H6)(({ theme }) => ({
 }))
 
 const Status = ({ listStatus, labels, handleChange, bgLightGrey, bgPrimary, status }) => {
-
     const getColor = (status) => {
         switch (status) {
             case "Pending":

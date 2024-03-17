@@ -66,6 +66,10 @@ export default function SideButtons({
     getCardActivities
 }) {
 
+
+    console.log("labels",labels)
+    console.log("listStatus",listStatus)
+
     const _logic = ProjectLogic();
     const { palette } = useTheme()
     const bgPrimary = palette.primary.main
